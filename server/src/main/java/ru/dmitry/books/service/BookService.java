@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import ru.dmitry.books.dto.BookCreateDTO;
 import ru.dmitry.books.dto.BookResponseDTO;
 import ru.dmitry.books.model.BookEntity;
+import ru.dmitry.books.model.GenreEntity;
 import ru.dmitry.books.repository.BookRepository;
+import ru.dmitry.books.repository.GenreRepository;
 
 /**
  * 
@@ -22,6 +24,7 @@ import ru.dmitry.books.repository.BookRepository;
 @RequiredArgsConstructor
 public class BookService {
     private final BookRepository bookRepository;
+    private final GenreRepository genreRepository;
 
     // Create
     public BookResponseDTO createBook(BookCreateDTO dto) {
@@ -73,7 +76,12 @@ public class BookService {
         book.setTitle(dto.title());
         book.setAuthor(dto.author());
         book.setDescription(dto.description());
-        // book.setGenre(dto.genreId());
+        
+        GenreEntity genre = genreRepository.findById(dto.genreId()).orElseThrow(
+            () -> new EntityNotFoundException("Genre with this id is not found")
+        );
+
+        book.setGenre(genre);
 
         
         return toDto(book);
@@ -105,7 +113,11 @@ public class BookService {
         book.setTitle(dto.title());
         book.setAuthor(dto.author());
         book.setDescription(dto.description());
-        // book.setGenre(dto.genreId());
+        GenreEntity genre = genreRepository.findById(dto.genreId()).orElseThrow(
+            () -> new EntityNotFoundException("Genre with this id is not found")
+        );
+
+        book.setGenre(genre);
 
         return book;
     }
