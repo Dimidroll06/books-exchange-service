@@ -15,10 +15,12 @@ import lombok.Setter;
 
 /**
  * Книга, для поиска и отзывов
+ * 
  * @author dmitry
  */
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "books")
@@ -33,12 +35,12 @@ public class BookEntity {
 
     @Column(name = "author", nullable = false)
     private String author;
-    
+
     @Column(name = "description")
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "genre_id")
     private GenreEntity genre;
-    
+
 }

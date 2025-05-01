@@ -1,9 +1,7 @@
 package ru.dmitry.books.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,59 +32,64 @@ public class BookService {
         return toDto(savedBook);
     }
 
-
     // Get
     public BookResponseDTO getBookById(Long id) {
         BookEntity book = bookRepository.findById(id).orElseThrow(
-            () -> new EntityNotFoundException("Book not found")
-        );
+                () -> new EntityNotFoundException("Book not found"));
         return toDto(book);
     }
 
-    public List<BookResponseDTO> getBooksByFilter(String filter) {
-        List<BookResponseDTO> books = new ArrayList<>();
-        for (BookEntity book : bookRepository.findAll()) {
-            if (book.getAuthor().contains(filter) || book.getTitle().contains(filter)) {
-                books.add(toDto(book));
-            }
+    // public List<BookResponseDTO> getBooksByFilter(String filter) {
+    // List<BookResponseDTO> books = new ArrayList<>();
+    // for (BookEntity book : bookRepository.findAll()) {
+    // if (book.getAuthor().contains(filter) || book.getTitle().contains(filter)) {
+    // books.add(toDto(book));
+    // }
+    // }
+
+    // return books;
+    // }
+
+    // public List<BookResponseDTO> getBooksByFilter(Long genreId) {
+    // List<BookResponseDTO> books = new ArrayList<>();
+    // for (BookEntity book : bookRepository.findAll()) {
+    // if (Objects.equals(book.getGenre().getId(), genreId)) {
+    // books.add(toDto(book));
+    // }
+    // }
+
+    // return books;
+    // }
+
+    public Page<BookResponseDTO> findBooksByFilters(String title, String author, Long genreId, Pageable pageable) {
+        if (genreId != null) {
+            genreRepository.findById(genreId)
+                    .orElseThrow(() -> new EntityNotFoundException("Genre not found"));
         }
 
-        return books;
+        Page<BookEntity> books = bookRepository.findByFilters(
+                title, author, genreId, pageable);
+
+        return books.map(this::toDto);
     }
-
-    public List<BookResponseDTO> getBooksByFilter(Long genreId) {
-        List<BookResponseDTO> books = new ArrayList<>();
-        for (BookEntity book : bookRepository.findAll()) {
-            if (Objects.equals(book.getGenre().getId(), genreId)) {
-                books.add(toDto(book));
-            }
-        }
-
-        return books;
-    }
-
 
     // Update
     @Transactional
     public BookResponseDTO updateBook(Long id, BookCreateDTO dto) {
         BookEntity book = bookRepository.findById(id).orElseThrow(
-            () -> new EntityNotFoundException("Book not found")
-        );
+                () -> new EntityNotFoundException("Book not found"));
 
         book.setTitle(dto.title());
         book.setAuthor(dto.author());
         book.setDescription(dto.description());
-        
+
         GenreEntity genre = genreRepository.findById(dto.genreId()).orElseThrow(
-            () -> new EntityNotFoundException("Genre with this id is not found")
-        );
+                () -> new EntityNotFoundException("Genre not found"));
 
         book.setGenre(genre);
 
-        
         return toDto(book);
     }
-
 
     // Udalit
     @Transactional
@@ -101,11 +104,11 @@ public class BookService {
     // ДТОШЕЧКИ
     private BookResponseDTO toDto(BookEntity book) {
         return new BookResponseDTO(
-            book.getTitle(),
-            book.getAuthor(),
-            book.getDescription(),
-            book.getGenre().getName()
-        );
+                book.getId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getDescription(),
+                book.getGenre().getName());
     }
 
     private BookEntity toEntity(BookCreateDTO dto) {
@@ -114,8 +117,7 @@ public class BookService {
         book.setAuthor(dto.author());
         book.setDescription(dto.description());
         GenreEntity genre = genreRepository.findById(dto.genreId()).orElseThrow(
-            () -> new EntityNotFoundException("Genre with this id is not found")
-        );
+                () -> new EntityNotFoundException("Genre with this id is not found"));
 
         book.setGenre(genre);
 
