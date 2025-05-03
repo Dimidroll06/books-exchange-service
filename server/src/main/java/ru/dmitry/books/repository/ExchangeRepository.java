@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import ru.dmitry.books.model.ExchangeEntity;
+import ru.dmitry.books.model.ExchangeEntity.ExchangeStatus;
 
 @Repository
 public interface ExchangeRepository extends JpaRepository<ExchangeEntity, Long> {
     List<ExchangeEntity> findByFromUserIdOrToUserId(Long fromUserId, Long toUserId);
+    long countByStatus(ExchangeStatus status);
 }
