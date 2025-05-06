@@ -14,7 +14,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := repository.GetUserByUsername(username)
+	user, err := repository.GetRepository().GetUserByUsername(username)
 	if err != nil {
 		http.Error(w, "User not found", http.StatusNotFound)
 		return

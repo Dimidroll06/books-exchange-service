@@ -15,11 +15,11 @@ func RegisterUser(user models.User) error {
 		return err
 	}
 	user.Hash = string(hash)
-	return repository.SaveUser(user)
+	return repository.GetRepository().SaveUser(user)
 }
 
 func LoginUser(credentials models.Credentials) (string, error) {
-	user, err := repository.GetUserByUsername(credentials.Username)
+	user, err := repository.GetRepository().GetUserByUsername(credentials.Username)
 	if err != nil {
 		return "", err
 	}

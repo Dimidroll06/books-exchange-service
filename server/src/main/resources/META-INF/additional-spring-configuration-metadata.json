@@ -1,7 +1,0 @@
-{"properties": [
-  {
-    "name": "jwt.secret",
-    "type": "java.lang.String",
-    "description": "jwt secret key u know bro?"
-  }
-]}

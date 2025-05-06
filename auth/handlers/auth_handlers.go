@@ -35,7 +35,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := repository.GetUserByUsername(credentials.Username)
+	user, err := repository.GetRepository().GetUserByUsername(credentials.Username)
 	if err != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return

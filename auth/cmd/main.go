@@ -35,7 +35,7 @@ func main() {
 			IsAdmin:  true,
 		}
 
-		err = repository.SaveUser(admin)
+		err = repository.GetRepository().SaveUser(admin)
 		if err != nil {
 			log.Fatalf("Failed to create admin user: %v", err)
 		}
