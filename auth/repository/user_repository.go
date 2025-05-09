@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	SaveUser(user models.User) error
 	GetUserByUsername(username string) (models.User, error)
+	GetUserByID(id uint) (models.User, error)
 }
 
 var currentRepository UserRepository = &defaultRepository{}
@@ -26,6 +27,15 @@ func (r *defaultRepository) SaveUser(user models.User) error {
 func (r *defaultRepository) GetUserByUsername(username string) (models.User, error) {
 	var user models.User
 	result := config.DB.Where("username = ?", username).First(&user)
+	if result.Error != nil {
+		return models.User{}, errors.New("user not found")
+	}
+	return user, nil
+}
+
+func (r *defaultRepository) GetUserByID(id uint) (models.User, error) {
+	var user models.User
+	result := config.DB.First(&user, id)
 	if result.Error != nil {
 		return models.User{}, errors.New("user not found")
 	}

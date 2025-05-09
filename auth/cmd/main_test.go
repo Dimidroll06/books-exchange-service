@@ -29,6 +29,11 @@ func (m *MockRepository) GetUserByUsername(username string) (models.User, error)
 	return args.Get(0).(models.User), args.Error(1)
 }
 
+func (m *MockRepository) GetUserByID(id uint) (models.User, error) {
+	args := m.Called(id)
+	return args.Get(0).(models.User), args.Error(1)
+}
+
 func TestRoutes(t *testing.T) {
 	mockRepo := new(MockRepository)
 
@@ -48,6 +53,7 @@ func TestRoutes(t *testing.T) {
 	r.HandleFunc("/login", handlers.LoginHandler).Methods("POST")
 	r.HandleFunc("/validate", handlers.ValidateTokenHandler).Methods("GET")
 	r.HandleFunc("/user", handlers.GetUserHandler).Methods("GET")
+	r.HandleFunc("/user/id", handlers.GetUserByIDHandler).Methods("GET")
 
 	t.Run("Test GetUserHandler", func(t *testing.T) {
 		req, err := http.NewRequest("GET", "/user?username=testuser", nil)
@@ -79,5 +85,22 @@ func TestRoutes(t *testing.T) {
 		r.ServeHTTP(rr, req)
 
 		require.Equal(t, http.StatusUnauthorized, rr.Code)
+	})
+
+	t.Run("Test GetUserByIDHandler", func(t *testing.T) {
+		mockRepo.On("GetUserByID", uint(1)).Return(mockUser, nil)
+
+		req, err := http.NewRequest("GET", "/user/id?id=1", nil)
+		require.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		r.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusOK, rr.Code)
+
+		var user models.User
+		err = json.NewDecoder(rr.Body).Decode(&user)
+		require.NoError(t, err)
+		require.Equal(t, "testuser", user.Username)
 	})
 }
