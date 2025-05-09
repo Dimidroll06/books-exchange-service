@@ -24,6 +24,7 @@ import com.dmitry.books.service.BookService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/book")
@@ -59,7 +60,7 @@ public class BookController {
     @Operation(summary = "Создать новую книгу")
     @PostMapping
     public ResponseEntity<Void> createBook(
-            @Parameter(description = "Данные для создания книги") @RequestBody BookRequestDTO bookRequestDTO) {
+            @Valid @Parameter(description = "Данные для создания книги") @RequestBody BookRequestDTO bookRequestDTO) {
 
         bookService.createBook(bookRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -69,7 +70,7 @@ public class BookController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateBook(
             @Parameter(description = "ID книги") @PathVariable Long id,
-            @Parameter(description = "Обновленные данные книги") @RequestBody BookRequestDTO bookRequestDTO) {
+            @Valid @Parameter(description = "Обновленные данные книги") @RequestBody BookRequestDTO bookRequestDTO) {
 
         bookService.updateBook(id, bookRequestDTO);
         return ResponseEntity.ok().build();
