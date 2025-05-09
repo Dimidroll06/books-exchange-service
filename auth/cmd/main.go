@@ -48,6 +48,7 @@ func main() {
 	r.HandleFunc("/login", handlers.LoginHandler).Methods("POST")
 	r.HandleFunc("/validate", handlers.ValidateTokenHandler).Methods("GET")
 	r.HandleFunc("/user", handlers.GetUserHandler).Methods("GET")
+	r.HandleFunc("/user/id", handlers.GetUserByIDHandler).Methods("GET")
 
 	log.Println("Server is running on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
