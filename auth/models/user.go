@@ -7,6 +7,7 @@ type User struct {
 	Username string `gorm:"unique;not null" json:"username"`
 	Hash     string `gorm:"not null" json:"hash"`
 	IsAdmin  bool   `gorm:"default:false" json:"is_admin"`
+	ID       uint   `json:"id"`
 }
 
 type Credentials struct {
