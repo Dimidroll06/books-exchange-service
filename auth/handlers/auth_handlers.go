@@ -63,11 +63,18 @@ func ValidateTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := utils.ValidateJWT(token)
+	claims, err := utils.ValidateJWT(token)
 	if err != nil {
 		http.Error(w, "Invalid token", http.StatusUnauthorized)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	response := map[string]interface{}{
+		"username": claims.Username,
+		"user_id":  claims.UserId,
+		"is_admin": claims.IsAdmin,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
