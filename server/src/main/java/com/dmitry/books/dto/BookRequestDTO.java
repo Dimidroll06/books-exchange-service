@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@Schema(description = "DTO для создания экземпляра книги")
+@Schema(description = "DTO для создания книги")
 public class BookRequestDTO {
 
     @NotBlank(message = "Название книги не должно быть пустым")
