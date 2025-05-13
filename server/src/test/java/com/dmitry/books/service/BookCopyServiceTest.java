@@ -24,11 +24,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.dmitry.books.config.AuthFilter;
+import com.dmitry.books.config.AuthFilter.UserData;
 import com.dmitry.books.dto.BookCopyRequestDTO;
 import com.dmitry.books.dto.BookCopyResponseDTO;
 import com.dmitry.books.dto.PageDTO;
 import com.dmitry.books.model.BookCopyEntity;
 import com.dmitry.books.repository.BookCopyRepository;
+import com.dmitry.books.repository.BookRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -36,6 +39,9 @@ class BookCopyServiceTest {
 
     @Mock
     private BookCopyRepository bookCopyRepository;
+
+    @Mock
+    private BookRepository bookRepository;
 
     @InjectMocks
     private BookCopyService bookCopyService;
@@ -113,12 +119,14 @@ class BookCopyServiceTest {
         bookCopy.setBookId(1L);
 
         when(bookCopyRepository.save(any(BookCopyEntity.class))).thenReturn(bookCopy);
+        when(bookRepository.existsById(1L)).thenReturn(true);
 
         bookCopyService.createBookCopy(1L, dto);
 
         verify(bookCopyRepository, times(1)).save(any(BookCopyEntity.class));
     }
 
+    
     @Test
     void testSetNewOwner() {
         BookCopyEntity bookCopy = new BookCopyEntity();
@@ -148,9 +156,15 @@ class BookCopyServiceTest {
 
     @Test
     void testDeleteBookCopy() {
+        AuthFilter.UserData user = new UserData(null, 1L, false);
+        BookCopyEntity book = new BookCopyEntity();
+        book.setBookId(1L);
+        book.setOwnerId(1L);
+
+        when(bookCopyRepository.findById(1L)).thenReturn(Optional.of(book));
         doNothing().when(bookCopyRepository).deleteById(1L);
 
-        bookCopyService.deleteBookCopy(1L);
+        bookCopyService.deleteBookCopy(1L, user);
 
         verify(bookCopyRepository, times(1)).deleteById(1L);
     }
