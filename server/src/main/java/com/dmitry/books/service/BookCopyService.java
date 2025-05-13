@@ -81,6 +81,7 @@ public class BookCopyService {
 
         bookCopyRepository.save(bookCopy);
     }
+    
     public void deleteBookCopy(Long id, AuthFilter.UserData userData) {
         BookCopyEntity bookCopy = bookCopyRepository.findById(id)
             .orElseThrow(
