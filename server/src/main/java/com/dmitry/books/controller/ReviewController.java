@@ -72,7 +72,7 @@ public class ReviewController {
     @Operation(summary = "Написать отзыв")
     @PostMapping
     public ResponseEntity<Void> createNewReview(
-            @Parameter(description = "Отзыв") @PathVariable ReviewRequestDTO review) {
+            @Parameter(description = "Отзыв") @RequestBody ReviewRequestDTO review) {
         AuthFilter.UserData userData = SecurityUtils.getCurrentUser();
         if (userData == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
