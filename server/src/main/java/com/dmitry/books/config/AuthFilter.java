@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Component
 public class AuthFilter extends OncePerRequestFilter {
@@ -71,6 +72,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class UserData {
         private String username;
         private Long userId;
