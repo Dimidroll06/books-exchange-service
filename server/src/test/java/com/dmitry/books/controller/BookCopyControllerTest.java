@@ -29,6 +29,7 @@ import com.dmitry.books.config.AuthFilter;
 import com.dmitry.books.dto.BookCopyRequestDTO;
 import com.dmitry.books.dto.BookCopyResponseDTO;
 import com.dmitry.books.dto.PageDTO;
+import com.dmitry.books.exception.GlobalExceptionHandler;
 import com.dmitry.books.service.BookCopyService;
 import com.dmitry.books.util.SecurityUtils;
 
@@ -49,7 +50,9 @@ class BookCopyControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(bookCopyController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(bookCopyController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
 
         bookCopyResponseDTO = new BookCopyResponseDTO();
         bookCopyResponseDTO.setId(1L);
