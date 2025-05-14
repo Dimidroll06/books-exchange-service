@@ -104,13 +104,14 @@ public class ReviewService {
         ReviewResponseDTO dto = new ReviewResponseDTO();
 
         BookEntity book = bookRepository.findById(review.getBookId())
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Book not found"));
+                .orElse(null);
         BookResponseDTO bookDto = new BookResponseDTO();
-        bookDto.setId(book.getId());
-        bookDto.setTitle(book.getTitle());
-        bookDto.setAuthor(book.getAuthor());
-        bookDto.setDescription(book.getDescription());
+        if (book != null) {
+            bookDto.setId(book.getId());
+            bookDto.setTitle(book.getTitle());
+            bookDto.setAuthor(book.getAuthor());
+            bookDto.setDescription(book.getDescription());
+        }
 
         dto.setBook(bookDto);
 
