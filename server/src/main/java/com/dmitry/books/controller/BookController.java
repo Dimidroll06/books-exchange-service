@@ -17,21 +17,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dmitry.books.dto.BookRatingDTO;
 import com.dmitry.books.dto.BookRequestDTO;
 import com.dmitry.books.dto.BookResponseDTO;
 import com.dmitry.books.dto.PageDTO;
 import com.dmitry.books.service.BookService;
+import com.dmitry.books.service.ReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/book")
 public class BookController {
 
     @Autowired
-    private BookService bookService;
+    private final ReviewService reviewService;
+
+    @Autowired
+    private final BookService bookService;
 
     @Operation(summary = "Получить список книг с фильтрацией и пагинацией")
     @GetMapping
@@ -55,6 +62,14 @@ public class BookController {
         Optional<BookResponseDTO> book = bookService.getBookById(id);
         return book.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @Operation(summary = "Получить рейтинг по ID")
+    @GetMapping("/rating/{id}")
+    public ResponseEntity<BookRatingDTO> getBookRatingById(
+            @Parameter(description = "ID книги") @PathVariable Long id) {
+        BookRatingDTO rating = reviewService.getBookRatingById(id);
+        return ResponseEntity.ok(rating);
     }
 
     @Operation(summary = "Создать новую книгу")

@@ -21,10 +21,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.dmitry.books.dto.BookRatingDTO;
 import com.dmitry.books.dto.BookResponseDTO;
 import com.dmitry.books.dto.PageDTO;
 import com.dmitry.books.exception.GlobalExceptionHandler;
 import com.dmitry.books.service.BookService;
+import com.dmitry.books.service.ReviewService;
 
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
@@ -33,6 +35,9 @@ class BookControllerTest {
 
     @Mock
     private BookService bookService;
+
+    @Mock
+    private ReviewService reviewService;
 
     @InjectMocks
     private BookController bookController;
@@ -83,6 +88,21 @@ class BookControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(""));
     }
+
+    @Test
+    void testGetBookRatingById() throws Exception {
+        BookRatingDTO bookRating = new BookRatingDTO();
+        bookRating.setAverageRating(10D);
+        bookRating.setBookId(1L);
+        bookRating.setReviewCount(2L);
+
+        Mockito.when(reviewService.getBookRatingById(1L)).thenReturn(bookRating);
+        mockMvc.perform(get("/book/rating/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bookId").value(1))
+                .andExpect(jsonPath("$.averageRating").value(10))
+                .andExpect(jsonPath("$.reviewCount").value(2));
+        }
 
     @Test
     void testCreateBook() throws Exception {
