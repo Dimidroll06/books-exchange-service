@@ -26,15 +26,17 @@ import com.dmitry.books.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/copies")
 public class BookCopyController {
     
     @Autowired
-    private BookCopyService bookCopyService;
+    private final BookCopyService bookCopyService;
 
     @Operation(summary = "Получить экземпляры книг по ID владельца")
     @GetMapping("/by-owner/{ownerId}")
