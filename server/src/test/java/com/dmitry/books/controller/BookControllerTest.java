@@ -96,7 +96,7 @@ class BookControllerTest {
         bookRating.setBookId(1L);
         bookRating.setReviewCount(2L);
 
-        Mockito.when(reviewService.getBookRatingById(1L)).thenReturn(bookRating);
+        Mockito.when(reviewService.getBookRatingById(1L)).thenReturn(Optional.of(bookRating));
         mockMvc.perform(get("/book/rating/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.bookId").value(1))

@@ -1,5 +1,7 @@
 package com.dmitry.books.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,12 +20,12 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long>{
         @Param("userId") Long userId,
         Pageable pageable);
 
-    @Query("SELECT NEW com.dmitry.books.dto.BookRatingDTO("+
-                ":bookId, " +
+    @Query("SELECT NEW com.dmitry.books.dto.BookRatingDTO(" +
+                "r.bookId, " +
                 "COUNT(r), " +
                 "COALESCE(AVG(r.rating), 0.0)) " +
                 "FROM ReviewEntity r " +
-                "WHERE (r.bookId = :bookId OR :bookId IS NULL) " +
+                "WHERE (r.bookId = :bookId) " +
                 "GROUP BY r.bookId")
-    BookRatingDTO findBookRatingInfo(@Param("bookId") Long bookId); 
+    Optional<BookRatingDTO> findBookRatingInfo(@Param("bookId") Long bookId); 
 }

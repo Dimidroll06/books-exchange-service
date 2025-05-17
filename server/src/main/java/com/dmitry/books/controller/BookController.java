@@ -26,6 +26,7 @@ import com.dmitry.books.service.ReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -68,7 +69,8 @@ public class BookController {
     @GetMapping("/rating/{id}")
     public ResponseEntity<BookRatingDTO> getBookRatingById(
             @Parameter(description = "ID книги") @PathVariable Long id) {
-        BookRatingDTO rating = reviewService.getBookRatingById(id);
+        BookRatingDTO rating = reviewService.getBookRatingById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Rating for this book is undefined"));
         return ResponseEntity.ok(rating);
     }
 

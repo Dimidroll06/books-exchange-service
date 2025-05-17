@@ -56,7 +56,7 @@ public class ReviewService {
             .map(this::tDto);
     }
 
-    public BookRatingDTO getBookRatingById(Long id) {
+    public Optional<BookRatingDTO> getBookRatingById(Long id) {
         return reviewRepository.findBookRatingInfo(id);
     }
 

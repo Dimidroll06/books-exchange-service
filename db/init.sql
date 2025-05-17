@@ -1,2 +1,0 @@
-CREATE USER auth_user WITH ENCRYPTED PASSWORD 'auth_password';
-GRANT ALL PRIVILEGES ON DATABASE db TO auth_user;

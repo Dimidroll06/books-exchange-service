@@ -129,9 +129,9 @@ class ReviewServiceTest {
         ratingDTO.setAverageRating(4.5);
         ratingDTO.setReviewCount(10L);
 
-        when(reviewRepository.findBookRatingInfo(1L)).thenReturn(ratingDTO);
+        when(reviewRepository.findBookRatingInfo(1L)).thenReturn(Optional.of(ratingDTO));
 
-        BookRatingDTO result = reviewService.getBookRatingById(1L);
+        BookRatingDTO result = reviewService.getBookRatingById(1L).orElse(null);
 
         assertNotNull(result);
         assertEquals(4.5, result.getAverageRating());
