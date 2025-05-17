@@ -1,5 +1,2 @@
-CREATE DATABASE auth_db;
-CREATE DATABASE db;
-
-CREATE USER auth_user WITH PASSWORD 'auth_password';
-GRANT ALL PRIVILEGES ON DATABASE auth_db TO auth_user;
+CREATE USER auth_user WITH ENCRYPTED PASSWORD 'auth_password';
+GRANT ALL PRIVILEGES ON DATABASE db TO auth_user;

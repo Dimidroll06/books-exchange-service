@@ -48,7 +48,7 @@ public class AuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         try {
-            String validateUrl = "http://localhost:8080/validate";
+            String validateUrl = System.getenv().getOrDefault("AUTH_SERVER_URL", "http://auth:8080") + "/validate";
             String userDataJson = restTemplate.getForObject(validateUrl + "?token=" + token, String.class);
 
             UserData userData = objectMapper.readValue(userDataJson, UserData.class);
