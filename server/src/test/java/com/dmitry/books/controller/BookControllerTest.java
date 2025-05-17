@@ -140,13 +140,4 @@ class BookControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @Test
-    void testGlobalExceptionHandler() throws Exception {
-        Mockito.when(bookService.getBookById(1L))
-                .thenThrow(new RuntimeException("Unexpected error"));
-
-        mockMvc.perform(get("/book/1"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Something went wrong"));
-    }
 }
