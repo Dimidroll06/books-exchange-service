@@ -10,6 +10,7 @@ import (
 	"auth/repository"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -44,6 +45,15 @@ func main() {
 	}
 
 	r := mux.NewRouter()
+
+	handler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},                      // Разрешённый origin
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"}, // Разрешённые методы
+		AllowedHeaders:   []string{"*"},                      // Разрешённые заголовки
+		ExposedHeaders:   []string{},                         // Какие заголовки будут доступны клиенту
+		AllowCredentials: true,                               // Разрешить отправку cookies и credentials
+	}).Handler(r)
+
 	r.HandleFunc("/register", handlers.RegisterHandler).Methods("POST")
 	r.HandleFunc("/login", handlers.LoginHandler).Methods("POST")
 	r.HandleFunc("/validate", handlers.ValidateTokenHandler).Methods("GET")
@@ -51,5 +61,5 @@ func main() {
 	r.HandleFunc("/user/id", handlers.GetUserByIDHandler).Methods("GET")
 
 	log.Println("Server is running on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }

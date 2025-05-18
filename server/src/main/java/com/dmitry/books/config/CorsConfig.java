@@ -13,8 +13,8 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**") // Путь, для которого разрешаем CORS
-                        .allowedOrigins("http://localhost:3000") // Разрешённый источник (фронтенд)
+                registry.addMapping("*") // Путь, для которого разрешаем CORS
+                        .allowedOrigins("*") // Разрешённый источник (фронтенд)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Разрешённые методы
                         .allowedHeaders("*") // Разрешённые заголовки
                         .exposedHeaders("Authorization") // Заголовки, которые будут доступны клиенту

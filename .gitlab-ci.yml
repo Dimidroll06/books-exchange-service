@@ -1,0 +1,88 @@
+image: docker:latest
+services:
+  - docker:dind
+
+stages:
+  - test
+  - build
+  - docker-build
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  IMAGE_NAME_AUTH: $CI_REGISTRY_IMAGE/auth
+  IMAGE_NAME_SERVER: $CI_REGISTRY_IMAGE/server
+  IMAGE_NAME_FRONTEND: $CI_REGISTRY_IMAGE/frontend
+
+before_script:
+  - docker info
+
+test-auth:
+  image: golang:1.24
+  stage: test
+  script:
+    - cd auth
+    - go mod download
+    - go test ./... -v
+
+test-server:
+  image: eclipse-temurin:17-jdk
+  stage: test
+  script:
+    - cd server
+    - ./gradlew test --no-daemon
+
+build-auth:
+  image: golang:1.24
+  stage: build
+  script:
+    - cd auth
+    - go mod download
+    - CGO_ENABLED=0 go build -o auth-server cmd/main.go
+  artifacts:
+    paths:
+      - auth/auth-server
+
+build-server:
+  image: eclipse-temurin:17-jdk
+  stage: build
+  script:
+    - cd server
+    - ./gradlew build --no-daemon
+  artifacts:
+    paths:
+      - server/build/libs/*.jar
+
+build-frontend:
+  image: node:20
+  stage: build
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+
+docker-build-auth:
+  stage: docker-build
+  script:
+    - docker build -t $IMAGE_NAME_AUTH -f auth/Dockerfile .
+    - docker push $IMAGE_NAME_AUTH
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+docker-build-server:
+  stage: docker-build
+  script:
+    - docker build -t $IMAGE_NAME_SERVER -f server/Dockerfile .
+    - docker push $IMAGE_NAME_SERVER
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+docker-build-frontend:
+  stage: docker-build
+  script:
+    - docker build -t $IMAGE_NAME_FRONTEND -f frontend/Dockerfile .
+    - docker push $IMAGE_NAME_FRONTEND
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

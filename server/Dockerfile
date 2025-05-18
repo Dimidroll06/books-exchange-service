@@ -1,6 +1,7 @@
 FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 COPY . .
+RUN ./gradlew test --no-daemon
 RUN ./gradlew build --no-daemon
 
 FROM eclipse-temurin:17-jdk

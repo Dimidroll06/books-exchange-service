@@ -7,6 +7,7 @@ RUN go mod download
 
 COPY . .
 
+RUN go test ./... -v
 RUN go build -o auth-server cmd/main.go
 
 FROM alpine:3.21

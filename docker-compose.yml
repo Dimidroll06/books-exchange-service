@@ -53,6 +53,16 @@ services:
     depends_on:
       - db
       - auth
+      
+  frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      ports:
+        - "3000:3000"
+      depends_on:
+        - server
+        - auth
 
 volumes:
   db_data:
