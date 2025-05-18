@@ -2,6 +2,9 @@ package com.dmitry.books.config;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -49,7 +52,15 @@ public class AuthFilter extends OncePerRequestFilter {
 
         try {
             String validateUrl = System.getenv().getOrDefault("AUTH_SERVER_URL", "http://auth:8080") + "/validate";
-            String userDataJson = restTemplate.getForObject(validateUrl + "?token=" + token, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            String userDataJson = restTemplate.exchange(
+                    validateUrl,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            ).getBody();
 
             UserData userData = objectMapper.readValue(userDataJson, UserData.class);
 
