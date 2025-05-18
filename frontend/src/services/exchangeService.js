@@ -2,7 +2,7 @@ import axios from 'axios';
 import { setAuthToken } from './authService';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8081',
+    baseURL: '/server',
 });
 setAuthToken(localStorage.getItem('token'));
 

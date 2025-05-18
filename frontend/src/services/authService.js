@@ -18,7 +18,7 @@ function parseJwt(token) {
 }
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: '/auth',
 });
 
 export const login = async (username, password) => {

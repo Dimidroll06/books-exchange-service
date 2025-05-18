@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, TextField, Button, Snackbar, Alert } from "@mui/material";
 import { useState } from "react";
-import { createNewExchange } from "../services/exchangeService";
+import { createExchange } from "../services/exchangeService";
 
 export default function RequestExchangeForm({ bookCopyId }) {
   const [openForm, setOpenForm] = useState(false);
@@ -26,7 +26,7 @@ export default function RequestExchangeForm({ bookCopyId }) {
     setLoading(true);
 
     try {
-      await createNewExchange({
+      await createExchange({
         bookCopyId,
         location,
       });
