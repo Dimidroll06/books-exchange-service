@@ -11,23 +11,24 @@ import {
   CardContent,
   Pagination,
   CircularProgress,
-  Paper
+  Paper,
 } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-let genres = [{ id: "", name: "Все жанры" }];
 
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
-
+  const [genres, setGenres] = useState([{ id: "", name: "Все жанры" }]);
+  
   const [searchParams, setSearchParams] = useSearchParams();
   const [title, setTitle] = useState(searchParams.get("q") || "");
   const [author, setAuthor] = useState("");
   const [genreId, setGenreId] = useState("");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
-
+  
   const [showAddForm, setShowAddForm] = useState(false);
   const [newBook, setNewBook] = useState({
     title: "",
@@ -36,14 +37,17 @@ export default function Home() {
     genreId: 0,
   });
   const [submitting, setSubmitting] = useState(false);
-
+  const navigate = useNavigate();
+  
   useEffect(() => {
     setLoading(true);
-    genres.concat(getAllGenres());
+    getAllGenres().then((data) => {
+      setGenres(data.concat([{ id: "", name: "Все жанры" }]));
+    });
     getBooks(title, author, genreId, page - 1, 10)
-      .then((data) => {
-        setBooks(data.content || []);
-        setTotalPages(data.totalPages || 1);
+    .then((data) => {
+      setBooks(data.content || []);
+      setTotalPages(data.totalPages || 1);
       })
       .finally(() => setLoading(false));
   }, [title, author, genreId, page]);
@@ -60,6 +64,10 @@ export default function Home() {
     setPage(Number(searchParams.get("page")) || 1);
     // eslint-disable-next-line
   }, [title, author, genreId, page, searchParams]);
+
+  const handleOpenBook = (e, bookId) => {
+    navigate('/book/'+bookId);
+  }
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -218,12 +226,13 @@ export default function Home() {
                       {book.author}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Жанр: {book.genreName}
+                      Жанр: {book.genre}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Рейтинг: {book.rating ?? "—"} ({book.reviewsCount ?? 0}{" "}
                       отзывов)
                     </Typography>
+                    <Button type="button" onClick={(e)=>handleOpenBook(e, book.id)}>Подробнее...</Button>
                   </CardContent>
                 </Card>
               </Grid>

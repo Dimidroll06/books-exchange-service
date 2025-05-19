@@ -50,6 +50,18 @@ public class BookCopyController {
         return ResponseEntity.ok(bookCopies);
     }
 
+    @Operation(summary = "Получить экземпляры книг по ID книги")
+    @GetMapping("/by-book/{bookId}")
+    public ResponseEntity<PageDTO<BookCopyResponseDTO>> getBooksByBookId(
+            @Parameter(description = "Идентификатор книги") @PathVariable(required = true) Long bookId,
+            @Parameter(description = "Номер страницы (начиная с 0)") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Размер страницы") @RequestParam(defaultValue = "10") int size) {
+        
+        Pageable pageable = PageRequest.of(page, size);
+        PageDTO<BookCopyResponseDTO> bookCopies = bookCopyService.getByBookId(bookId, pageable);
+        return ResponseEntity.ok(bookCopies);
+    }
+
     @Operation(summary = "Получить экземпляр книги по ID")
     @GetMapping("/{id}")
     public ResponseEntity<BookCopyResponseDTO> getBookById(

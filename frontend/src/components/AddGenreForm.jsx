@@ -10,7 +10,7 @@ export default function AddGenreForm() {
     if (!genreName.trim()) return;
 
     try {
-      await addGenre({ name: genreName });
+      await addGenre(genreName);
       alert("Жанр успешно добавлен!");
       setGenreName("");
     } catch (error) {

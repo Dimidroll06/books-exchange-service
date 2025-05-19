@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import MyExchanges from "./pages/MyExchanges";
 import AdminPanel from "./pages/AdminPanel";
 import { getUser } from "./services/authService";
+import Book from "./pages/Book";
 
 console.log(getUser())
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/my-exchanges" element={<MyExchanges />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/book/:id" element={<Book />} />
           </Routes>
         </div>
         <Footer />

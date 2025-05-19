@@ -44,3 +44,19 @@ export const getBookCopiesByOwnerId = async (ownerId, page = 0, size = 10) => {
     const res = await api.get(`/copies/by-owner/${ownerId}`, { params: { page, size } });
     return res.data;
 };
+
+export const getBookCopiesByBookId = async (bookId, page = 0, size = 10) => {
+    /*
+    Возвращает:
+    {
+      content: [BookCopyResponseDTO],
+      pageNumber: 0,
+      pageSize: 10,
+      totalElements: 50,
+      totalPages: 5,
+      isLast: false
+    }
+    */
+    const res = await api.get(`/copies/by-book/${bookId}`, { params: { page, size } });
+    return res.data;
+};

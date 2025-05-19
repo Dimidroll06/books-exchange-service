@@ -37,15 +37,10 @@ public class AuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if ("GET".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized: Missing or invalid token");
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -63,10 +58,10 @@ public class AuthFilter extends OncePerRequestFilter {
                     String.class
             ).getBody();
             JsonNode jsonNode = objectMapper.readTree(userDataJson);
-
+            objectMapper.readValue(userDataJson, UserData.class);
             UserData userData = new UserData(
                 jsonNode.get("username").asText(), 
-                jsonNode.get("id").asLong(), 
+                jsonNode.get("user_id").asLong(), 
                 jsonNode.get("is_admin").asBoolean()
             );
 

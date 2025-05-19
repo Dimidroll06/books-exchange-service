@@ -62,6 +62,19 @@ public class BookCopyService {
         return result;
     }
 
+    public PageDTO<BookCopyResponseDTO> getByBookId(Long id, Pageable pageable) {
+        Page<BookCopyEntity> page = bookCopyRepository.findByBookId(id, pageable);
+
+        PageDTO<BookCopyResponseDTO> result = new PageDTO<>();
+        result.setContent(page.map(this::toDto).getContent());
+        result.setPageNumber(page.getNumber());
+        result.setPageSize(page.getSize());
+        result.setTotalElements(page.getTotalElements());
+        result.setTotalPages(page.getTotalPages());
+        result.setLast(page.isLast());
+
+        return result;
+    }
 
     public void createBookCopy(Long ownerId, BookCopyRequestDTO dto) {
         boolean bookExists = bookRepository.existsById(dto.getBookId());

@@ -50,7 +50,7 @@ export const register = async (username, password) => {
       token: "string"
     }
     */
-    const response = await api.post('/register', { username, password });
+    const response = await api.post('/register', { username, hash: password });
     return response.data;
 };
 
