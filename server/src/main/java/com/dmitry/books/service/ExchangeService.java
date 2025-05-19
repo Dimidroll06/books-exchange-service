@@ -145,7 +145,7 @@ public class ExchangeService {
         );
         book.setOwnerId(exchangeEntity.getToUserId());
         bookCopyRepository.save(book);
-        exchangeEntity.setStatus(1);
+        exchangeEntity.setStatus(2);
         exchangeRepository.save(exchangeEntity);
     }
 

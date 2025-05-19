@@ -270,8 +270,14 @@ class ExchangeServiceTest {
         entity.setId(1L);
         entity.setFromUserId(2L);
         entity.setToUserId(1L);
+        entity.setBookCopyId(1L);
         entity.setStatus(1);
 
+        BookCopyEntity bookCopy = new BookCopyEntity();
+        bookCopy.setId(10L);
+        bookCopy.setOwnerId(2L);
+
+        when(bookCopyRepository.findById(1L)).thenReturn(Optional.of(bookCopy));
         when(exchangeRepository.findById(1L)).thenReturn(Optional.of(entity));
         when(exchangeRepository.save(any(ExchangeEntity.class))).thenReturn(entity);
 
