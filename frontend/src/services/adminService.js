@@ -2,9 +2,10 @@ import axios from 'axios';
 import { setAuthToken } from './authService';
 
 const api = axios.create({
-    baseURL: '/server',
+    baseURL: import.meta.env.VITE_SERVER || "/books",
 });
-setAuthToken(localStorage.getItem('token'));
+setAuthToken(localStorage.getItem('token'), api);
+console.log(api.defaults.headers)
 
 export const addGenre = async (name) => {
     const res = await api.post('/admin/genres', { name });

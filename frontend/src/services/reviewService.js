@@ -2,9 +2,9 @@ import axios from 'axios';
 import { setAuthToken } from './authService';
 
 const api = axios.create({
-    baseURL: '/server',
+    baseURL: import.meta.env.VITE_SERVER || "/books",
 });
-setAuthToken(localStorage.getItem('token'));
+setAuthToken(localStorage.getItem('token'), api);
 
 export const createReview = async (bookId, rating, comment) => {
     const res = await api.post('/rewiew', { bookId, rating, comment });

@@ -18,7 +18,7 @@ function parseJwt(token) {
 }
 
 const api = axios.create({
-    baseURL: '/auth',
+    baseURL: import.meta.env.VITE_AUTH || "/auth",
 });
 
 export const login = async (username, password) => {
@@ -54,7 +54,7 @@ export const register = async (username, password) => {
     return response.data;
 };
 
-export const setAuthToken = (token) => {
+export const setAuthToken = (token, api) => {
     if (token) {
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
@@ -74,5 +74,5 @@ export const getUserById = async (id) => {
 
 const token = localStorage.getItem('token');
 if (token) {
-    setAuthToken(token);
+    setAuthToken(token, api);
 }

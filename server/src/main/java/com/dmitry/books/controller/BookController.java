@@ -1,5 +1,6 @@
 package com.dmitry.books.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import com.dmitry.books.dto.BookRatingDTO;
 import com.dmitry.books.dto.BookRequestDTO;
 import com.dmitry.books.dto.BookResponseDTO;
 import com.dmitry.books.dto.PageDTO;
+import com.dmitry.books.model.GenreEntity;
 import com.dmitry.books.service.BookService;
 import com.dmitry.books.service.ReviewService;
 
@@ -40,6 +42,12 @@ public class BookController {
 
     @Autowired
     private final BookService bookService;
+
+    @Operation(summary = "Получить список жанров")
+    @GetMapping("/genre")
+    public ResponseEntity<List<GenreEntity>> getGenres() {
+        return ResponseEntity.ok(bookService.getAllGenres());
+    }
 
     @Operation(summary = "Получить список книг с фильтрацией и пагинацией")
     @GetMapping

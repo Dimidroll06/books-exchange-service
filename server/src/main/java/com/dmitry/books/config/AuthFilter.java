@@ -12,6 +12,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
@@ -61,8 +62,13 @@ public class AuthFilter extends OncePerRequestFilter {
                     entity,
                     String.class
             ).getBody();
+            JsonNode jsonNode = objectMapper.readTree(userDataJson);
 
-            UserData userData = objectMapper.readValue(userDataJson, UserData.class);
+            UserData userData = new UserData(
+                jsonNode.get("username").asText(), 
+                jsonNode.get("id").asLong(), 
+                jsonNode.get("is_admin").asBoolean()
+            );
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     userData.getUsername(),

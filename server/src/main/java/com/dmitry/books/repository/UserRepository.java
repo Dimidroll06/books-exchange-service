@@ -18,7 +18,7 @@ public class UserRepository {
     private final ObjectMapper objectMapper;
 
     public UserDTO getUserByUsername(String username) {
-        String url = "http://localhost:8080/user?username=" + username;
+        String url = System.getenv().getOrDefault("AUTH_SERVER_URL", "http://auth:8080")+"/user?username=" + username;
         String response = restTemplate.getForObject(url, String.class);
 
         try {
@@ -34,7 +34,7 @@ public class UserRepository {
     }
 
     public UserDTO getUserById(Long id) {
-        String url = "http://localhost:8080/user/id?id=" + id;
+        String url = System.getenv().getOrDefault("AUTH_SERVER_URL", "http://auth:8080")+"/user/id?id=" + id;
         String response = restTemplate.getForObject(url, String.class);
 
         try {

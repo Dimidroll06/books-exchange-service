@@ -46,13 +46,7 @@ func main() {
 
 	r := mux.NewRouter()
 
-	handler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},                      // Разрешённый origin
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"}, // Разрешённые методы
-		AllowedHeaders:   []string{"*"},                      // Разрешённые заголовки
-		ExposedHeaders:   []string{},                         // Какие заголовки будут доступны клиенту
-		AllowCredentials: true,                               // Разрешить отправку cookies и credentials
-	}).Handler(r)
+	handler := cors.Default().Handler(r)
 
 	r.HandleFunc("/register", handlers.RegisterHandler).Methods("POST")
 	r.HandleFunc("/login", handlers.LoginHandler).Methods("POST")

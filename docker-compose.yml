@@ -58,6 +58,10 @@ services:
       build:
         context: ./frontend
         dockerfile: Dockerfile
+      environment:
+        VITE_SERVER: http://server:8080,
+        VITE_AUTH: http://auth:8080,
+        NODE_ENV: production
       ports:
         - "3000:3000"
       depends_on:

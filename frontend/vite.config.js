@@ -1,23 +1,27 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      '/auth': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace('/auth', '')
-      },
-      '/server': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace('/server', '')
-      }
+export default defineConfig(({ mode }) => {
+  const proxy = mode === 'development' ? {
+    '/auth': {
+      target: 'http://localhost:8080',
+      changeOrigin: true,
+      secure: false,
+      rewrite: (path) => path.replace('/auth', '')
+    },
+    '/books': {
+      target: 'http://localhost:8081',
+      changeOrigin: true,
+      secure: false,
+      rewrite: (path) => path.replace('/books', '')
     }
-  }
-})
+  } : {};
+
+  return {
+    plugins: [react()],
+    server: {
+      port: 3000,
+      proxy
+    }
+  };
+});

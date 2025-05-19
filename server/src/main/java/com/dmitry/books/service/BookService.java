@@ -1,5 +1,6 @@
 package com.dmitry.books.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,10 @@ public class BookService {
 
     @Autowired
     private GenreRepository genreRepository;
+
+    public List<GenreEntity> getAllGenres() {
+        return genreRepository.findAll();
+    }
 
     public PageDTO<BookResponseDTO> getBooksByFilter(String author, Long genreId, String title, Pageable pageable) {
         Page<BookEntity> page = bookRepository.findByFilters(author, genreId, title, pageable);

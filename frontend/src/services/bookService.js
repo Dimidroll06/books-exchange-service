@@ -2,10 +2,10 @@ import axios from 'axios';
 import { setAuthToken } from './authService';
 
 const api = axios.create({
-    baseURL: '/server',
+    baseURL: import.meta.env.VITE_SERVER || "/books",
 });
 
-setAuthToken(localStorage.getItem('token'));
+setAuthToken(localStorage.getItem('token'), api);
 
 export const getBooks = async (title, author, genreId, page = 0, size = 10) => {
     /*
@@ -55,6 +55,21 @@ export const createBook = async (bookData) => {
   const res = await api.post('/book', bookData);
   return res.data;
 };
+
+
+export const getAllGenres = async () => {
+  /*
+  Возвращает:
+  [
+  {
+    id: 1,
+    name: "фантастика"
+  }
+  ]  
+  */
+  const res = await api.get('/book/genre');
+  return res.data
+}
 
 export const updateBook = async (id, bookData) => {
   const res = await api.put(`/book/${id}`, bookData);
