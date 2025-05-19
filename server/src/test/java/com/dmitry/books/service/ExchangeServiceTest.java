@@ -282,7 +282,7 @@ class ExchangeServiceTest {
         when(exchangeRepository.save(any(ExchangeEntity.class))).thenReturn(entity);
 
         assertDoesNotThrow(() -> exchangeService.acceptExchange(1L, 1L));
-        assertEquals(1, entity.getStatus());
+        assertEquals(2, entity.getStatus());
         verify(exchangeRepository).save(entity);
     }
 
