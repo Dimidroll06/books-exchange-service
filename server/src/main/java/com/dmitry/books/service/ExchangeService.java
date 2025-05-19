@@ -14,7 +14,6 @@ import com.dmitry.books.dto.ExchangeResponseDTO;
 import com.dmitry.books.dto.PageDTO;
 import com.dmitry.books.dto.UserDTO;
 import com.dmitry.books.model.BookCopyEntity;
-import com.dmitry.books.model.BookEntity;
 import com.dmitry.books.model.ExchangeEntity;
 import com.dmitry.books.repository.BookCopyRepository;
 import com.dmitry.books.repository.ExchangeRepository;
@@ -141,9 +140,9 @@ public class ExchangeService {
         if (!Objects.equals(exchangeEntity.getToUserId(), userId)) {
             throw new SecurityException("You can't change status of this exchange");
         }
-        BookCopyEntity book = bookCopyRepository.findById(exchangeEntity.getBookCopyId().orElseThrow(
+        BookCopyEntity book = bookCopyRepository.findById(exchangeEntity.getBookCopyId()).orElseThrow(
             () -> new EntityNotFoundException("BookCopy not found")
-        ));
+        );
         book.setOwnerId(exchangeEntity.getToUserId());
         bookCopyRepository.save(book);
         exchangeEntity.setStatus(1);
