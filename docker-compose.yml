@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_password
+    ports:
+      - "9000:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_USER: auth_user
+      DB_PASSWORD: auth_password
+      DB_NAME: db
+      DB_PORT: 5432
+      JWT_SECRET: supersecret
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db
+      SPRING_DATASOURCE_USERNAME: auth_user
+      SPRING_DATASOURCE_PASSWORD: auth_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      AUTH_SERVER_URL: http://auth:8080
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+      - auth
+      
+  frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      environment:
+        VITE_SERVER: http://server:8080,
+        VITE_AUTH: http://auth:8080,
+        NODE_ENV: production
+      ports:
+        - "3000:3000"
+      depends_on:
+        - server
+        - auth
+
+volumes:
+  db_data:
