@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getBooks } from "../services/bookService";
+import { getAllGenres, getBooks, createBook } from "../services/bookService";
 import {
   Box,
   Typography,
@@ -11,10 +11,11 @@ import {
   CardContent,
   Pagination,
   CircularProgress,
+  Paper
 } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
-const genres = [{ id: "", name: "Все жанры" }];
+let genres = [{ id: "", name: "Все жанры" }];
 
 export default function Home() {
   const [books, setBooks] = useState([]);
@@ -27,8 +28,18 @@ export default function Home() {
   const [genreId, setGenreId] = useState("");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newBook, setNewBook] = useState({
+    title: "",
+    author: "",
+    description: "",
+    genreId: 0,
+  });
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     setLoading(true);
+    genres.concat(getAllGenres());
     getBooks(title, author, genreId, page - 1, 10)
       .then((data) => {
         setBooks(data.content || []);
@@ -53,6 +64,33 @@ export default function Home() {
   const handleSearch = (e) => {
     e.preventDefault();
     setPage(1);
+  };
+
+  const handleAddBookChange = (e) => {
+    const { name, value } = e.target;
+    setNewBook((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddBookSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      await createBook(newBook);
+      alert("Книга успешно добавлена!");
+
+      setNewBook({ title: "", author: "", description: "", genreId: "" });
+      setShowAddForm(false);
+
+      getBooks(title, author, genreId, page - 1, 10).then((data) => {
+        setBooks(data.content || []);
+      });
+    } catch (error) {
+      alert("Ошибка при добавлении книги");
+      console.error(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -95,6 +133,75 @@ export default function Home() {
           Найти
         </Button>
       </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Button variant="outlined" onClick={() => setShowAddForm(!showAddForm)}>
+          {showAddForm ? "Скрыть форму" : "Не нашли книгу?"}
+        </Button>
+      </Box>
+
+      {showAddForm && (
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Добавить новую книгу
+          </Typography>
+          <Box component="form" onSubmit={handleAddBookSubmit}>
+            <TextField
+              label="Название"
+              name="title"
+              value={newBook.title}
+              onChange={handleAddBookChange}
+              fullWidth
+              required
+              margin="normal"
+            />
+            <TextField
+              label="Автор"
+              name="author"
+              value={newBook.author}
+              onChange={handleAddBookChange}
+              fullWidth
+              required
+              margin="normal"
+            />
+            <TextField
+              label="Описание"
+              name="description"
+              multiline
+              rows={3}
+              value={newBook.description}
+              onChange={handleAddBookChange}
+              fullWidth
+              required
+              margin="normal"
+            />
+            <TextField
+              select
+              label="Жанр"
+              name="genreId"
+              value={newBook.genreId}
+              onChange={handleAddBookChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {genres
+                .filter((g) => g.id !== "")
+                .map((g) => (
+                  <MenuItem key={g.id} value={g.id}>
+                    {g.name}
+                  </MenuItem>
+                ))}
+            </TextField>
+            <Box sx={{ mt: 2 }}>
+              <Button type="submit" variant="contained" disabled={submitting}>
+                {submitting ? "Добавление..." : "Добавить книгу"}
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      )}
+
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />

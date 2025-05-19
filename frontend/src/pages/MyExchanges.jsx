@@ -105,12 +105,12 @@ export default function MyExchanges() {
         <>
           <List>
             {exchanges.map((exchange) => {
-              const isCurrentUserFrom =
+              const isCurrentUserFrom = getUser() ?
                 exchange.from?.id ===
-                getUser().id;
-              const isCurrentUserTo =
+                getUser().user_id : false;
+              const isCurrentUserTo = getUser() ?
                 exchange.to?.id ===
-                getUser().id;
+                getUser().user_id : false;
 
               const renderActionButton = () => {
                 if (exchange.status === "rejected") return null;

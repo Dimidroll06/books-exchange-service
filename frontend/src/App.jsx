@@ -10,6 +10,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import MyExchanges from "./pages/MyExchanges";
+import AdminPanel from "./pages/AdminPanel";
+import { getUser } from "./services/authService";
+
+console.log(getUser())
 
 function App() {
   return (
@@ -18,13 +22,14 @@ function App() {
     >
       <Router>
         <Header />
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, paddingTop: 64 }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/my-exchanges" element={<MyExchanges />} />
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </div>
         <Footer />

@@ -14,6 +14,7 @@ export default function Login() {
     try {
       await login(username, password);
       navigate("/");
+      window.location.reload();
     } catch (err) {
       console.error(err);
       setError("Ошибка входа. Проверьте логин и пароль.");

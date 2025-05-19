@@ -22,6 +22,7 @@ export default function Header() {
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -31,7 +32,7 @@ export default function Header() {
   };
 
   const handleProfile = () => {
-    navigate("/profile/"+user.id);
+    navigate(`/profile/${user.user_id}`);
     handleClose();
   };
 
@@ -41,12 +42,21 @@ export default function Header() {
   };
 
   const handleMyBooks = () => {
-    navigate("/profile#books");
+    navigate("/profile/" + user.user_id + "#books");
     handleClose();
   };
 
   const handleAdminPanel = () => {
-    navigate("/admin/panel");
+    navigate("/admin");
+    handleClose();
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/");
+    window.location.reload();
     handleClose();
   };
 
@@ -114,6 +124,7 @@ export default function Header() {
                   Панель администратора
                 </MenuItem>
               )}
+              <MenuItem onClick={handleLogout}>Выйти</MenuItem>
             </Menu>
           </div>
         )}

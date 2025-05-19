@@ -45,12 +45,12 @@ export default function Profile() {
 
         const copiesRes = await getBookCopiesByOwnerId(id);
         const bookDetails = await Promise.all(
-          copiesRes.content.map((copy) =>
+          copiesRes.content ? copiesRes.content.map((copy) =>
             getBookById(copy.bookId).then((data) => ({
               ...copy,
               bookTitle: data.title,
             }))
-          )
+          ) : []
         );
         setBooks(bookDetails);
 
