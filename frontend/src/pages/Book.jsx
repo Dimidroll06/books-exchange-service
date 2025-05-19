@@ -1,3 +1,5 @@
+// src/pages/BookPage.jsx
+
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -17,6 +19,8 @@ import {
   DialogActions,
   CircularProgress,
   Container,
+  Rating,
+  Divider,
 } from "@mui/material";
 
 import { getBookById, getBookRating } from "../services/bookService";
@@ -26,20 +30,27 @@ import {
   getBookCopiesByBookId,
 } from "../services/bookCopyService";
 import { createExchange } from "../services/exchangeService";
-import { getUserById } from "../services/authService";
+import { createReview, getReviewsByBookId } from "../services/reviewService";
+import { getUser, getUserById } from "../services/authService";
 
-export default function Book() {
+export default function BookPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [book, setBook] = useState(null);
   const [ratingData, setRatingData] = useState(null);
   const [copies, setCopies] = useState([]);
+  const [reviews, setReviews] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   const [exchangeDialogOpen, setExchangeDialogOpen] = useState(false);
   const [selectedCopyId, setSelectedCopyId] = useState(null);
   const [location, setLocation] = useState("");
+
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,6 +59,7 @@ export default function Book() {
         const bookRes = await getBookById(id);
         const ratingRes = await getBookRating(id);
         const copiesRes = await getBookCopiesByBookId(id);
+        const reviewsRes = await getReviewsByBookId(id);
 
         const enrichedCopies = await Promise.all(
           copiesRes.content.map(async (copy) => {
@@ -62,6 +74,7 @@ export default function Book() {
         setBook(bookRes);
         setRatingData(ratingRes);
         setCopies(enrichedCopies);
+        setReviews(reviewsRes.content || []);
       } catch (error) {
         console.error("Ошибка загрузки данных:", error);
         alert("Не удалось загрузить данные о книге");
@@ -76,7 +89,6 @@ export default function Book() {
 
   const handleAddMyCopy = async () => {
     try {
-      console.log(id);
       const res = await createBookCopy(id);
       const newCopy = await getBookCopyById(res.id);
       const owner = await getUserById(newCopy.ownerId);
@@ -113,6 +125,34 @@ export default function Book() {
     } finally {
       setExchangeDialogOpen(false);
       setLocation("");
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (rating < 1 || rating > 10) {
+      alert("Рейтинг должен быть от 1 до 10");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await createReview(id, rating, comment);
+      const user = getUser();
+      setReviews([
+        {
+          comment,
+          user,
+          book: { id: book.id, title: book.title, author: book.author },
+        },
+        ...reviews,
+      ]);
+      setRating(5);
+      setComment("");
+    } catch (error) {
+      console.error("Ошибка при отправке отзыва:", error);
+      alert("Не удалось отправить отзыв");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -154,6 +194,65 @@ export default function Book() {
           </Button>
         </CardContent>
       </Card>
+
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6">Оставить отзыв</Typography>
+        <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+          <Rating
+            name="rating"
+            value={rating}
+            onChange={(e, newValue) => setRating(newValue)}
+            precision={1}
+            max={10}
+          />
+          <TextField
+            label="Комментарий"
+            multiline
+            rows={3}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <Button
+            variant="contained"
+            color="success"
+            disabled={isSubmitting}
+            onClick={handleSubmitReview}
+            sx={{ alignSelf: "start" }}
+          >
+            {isSubmitting ? "Отправка..." : "Отправить отзыв"}
+          </Button>
+        </Box>
+      </Box>
+
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6">Отзывы пользователей</Typography>
+        {reviews.length > 0 ? (
+          <List>
+            {reviews.map((review) => (
+              <ListItem key={review.id} divider>
+                <ListItemText
+                  primary={`Пользователь: ${review.user?.username || "Аноним"}`}
+                  secondary={
+                    <>
+                      <Typography component="span" variant="body2">
+                        Рейтинг: {review.rating}/10
+                      </Typography>
+                      <br />
+                      {review.comment && (
+                        <Typography component="span" variant="body2">
+                          "{review.comment}"
+                        </Typography>
+                      )}
+                    </>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Typography>Нет отзывов</Typography>
+        )}
+      </Box>
 
       <Typography variant="h6" sx={{ mt: 4 }}>
         Экземпляры этой книги

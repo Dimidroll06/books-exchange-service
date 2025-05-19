@@ -20,7 +20,7 @@ public interface ExchangeRepository extends JpaRepository<ExchangeEntity, Long> 
 
     @Query("SELECT ex FROM ExchangeEntity ex " +
             "WHERE (ex.fromUserId = :userId) " +
-            "OR (ex.toUserId = :toUser)")
+            "OR (ex.toUserId = :userId)")
     Page<ExchangeEntity> findByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT CASE WHEN COUNT(ex) > 0 THEN true ELSE false END " +
